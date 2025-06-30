@@ -63,8 +63,71 @@ const verify_otp = async (req , res) => {
     user.otpExpires = undefined;
     await user.save();
 
-    const token = jwt.sign({ userId: user._id }, process.env.SCERET_KEY, { expiresIn: "1d" });
+    const token = jwt.sign({ userId: user._id, contact: user.contact }, JWT_SECRET, { expiresIn: "1d" });
+
+    if(user.firstName === undefined)
+    {
+      return res.json({ message: "OTP verified", token , isNew: true });
+    }
     res.json({ message: "OTP verified", token });
 }
 
-module.exports = { send_otp , verify_otp };
+const completeProfile = async (req, res) => {
+  try {
+    const { token, firstName, lastName, email } = req.body;
+
+    if (!token || !firstName || !lastName || !email) {
+      return res.status(400).json({ message: "All fields are required." });
+    }
+    // console.log("token",token)
+
+    const decoded = jwt.verify(token, JWT_SECRET);
+    // console.log("decode",decoded)
+    const contact = decoded.contact;
+    // console.log("complete contact", contact);
+
+    const user = await User.findOneAndUpdate(
+      { contact },
+      { firstName, lastName, email },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    res.status(200).json({ message: "Profile completed successfully.", user });
+  } 
+  catch (err) {
+    console.error("JWT decode error:", err);
+    res.status(500).json({ message: "Failed to complete profile", error: err.message });
+  }
+};
+
+const addAddress = async (req,res) => {
+  try{
+    const {token , address } = req.body;
+
+    if(!address) return res.json({message: "address is a required field"});
+
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const contact = decoded.contact;
+
+    const user = await User.findOneAndUpdate(
+      { contact },
+      { address },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    res.status(200).json({ message: "address added successfully.", user });
+  } 
+  catch (err) {
+    res.status(500).json({ message: "Failed to add address", error: err.message });
+  }
+}
+
+module.exports = { send_otp , verify_otp , completeProfile , addAddress };
