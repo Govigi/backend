@@ -104,30 +104,92 @@ const completeProfile = async (req, res) => {
   }
 };
 
-const addAddress = async (req,res) => {
-  try{
-    const {token , address } = req.body;
+const addAddress = async (req, res) => {
+  try {
+    const { token, address } = req.body;
+    if (!address) return res.json({ message: "address is a required field" });
 
-    if(!address) return res.json({message: "address is a required field"});
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const contact = decoded.contact;
+    const user = await User.findOne({ contact });
+    if (!user) return res.status(404).json({ message: "User not found." });
+
+    address.name = address.name || `${user.firstName || ""} ${user.lastName || ""}`.trim();
+    address.email = address.email || user.email;
+    address.contact = address.contact || user.contact;
+
+    const isDuplicate = user.addresses.some(
+      (addr) =>
+        addr.city === address.city &&
+        addr.pincode === address.pincode &&
+        addr.landmark === address.landmark
+    );
+
+    if (isDuplicate) {
+      return res.status(400).json({ message: "Address already exists." });
+    }
+
+    const updatedUser = await User.findOneAndUpdate(
+      { contact },
+      {
+        $push: {
+          addresses: {
+            $each: [address],
+            $slice: -3
+          }
+        }
+      },
+      { new: true }
+    );
+
+    res.status(200).json({ message: "Address added successfully.", user: updatedUser });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to add address", error: err.message });
+  }
+};
+
+const getAddress = async (req, res) => {
+  try {
+    const { token } = req.body;
+
+    if (!token) {
+      return res.status(400).json({ message: "Token is required" });
+    }
 
     const decoded = jwt.verify(token, JWT_SECRET);
     const contact = decoded.contact;
 
-    const user = await User.findOneAndUpdate(
-      { contact },
-      { address },
-      { new: true }
-    );
+    const user = await User.findOne({ contact });
 
     if (!user) {
-      return res.status(404).json({ message: "User not found." });
+      return res.status(404).json({ message: "User not found" });
     }
 
-    res.status(200).json({ message: "address added successfully.", user });
-  } 
-  catch (err) {
-    res.status(500).json({ message: "Failed to add address", error: err.message });
+    res.status(200).json({ addresses: user.addresses || [] });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch addresses", error: err.message });
   }
-}
+};
 
-module.exports = { send_otp , verify_otp , completeProfile , addAddress };
+const editAddress = async (req, res) => {
+  try {
+    const { token, index, updatedAddress } = req.body;
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const contact = decoded.contact;
+
+    const user = await User.findOne({ contact });
+    if (!user || !user.addresses[index]) {
+      return res.status(404).json({ message: "Address not found" });
+    }
+
+    user.addresses[index] = { ...user.addresses[index]._doc, ...updatedAddress };
+    await user.save();
+
+    res.status(200).json({ message: "Address updated", addresses: user.addresses });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to update address", error: err.message });
+  }
+};
+
+
+module.exports = { send_otp , verify_otp , completeProfile , addAddress , getAddress , editAddress };

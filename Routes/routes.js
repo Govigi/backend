@@ -11,7 +11,9 @@ const controller_image = require('../Controller/image');
 Router.post('/sendOTP', controller_auth.send_otp);
 Router.post('/verifyOTP', controller_auth.verify_otp);
 Router.post('/completeProfile', controller_auth.completeProfile);
-Router.patch('/addAddress', controller_auth.addAddress);
+Router.post('/addAddress', controller_auth.addAddress);
+Router.patch('/editAddress', controller_auth.editAddress);
+Router.post('/getAddress', controller_auth.getAddress);
 
 //order
 Router.get('/userOrders/:userId', controller_order.getUserOrders);
