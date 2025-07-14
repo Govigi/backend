@@ -135,7 +135,7 @@ const addAddress = async (req, res) => {
         $push: {
           addresses: {
             $each: [address],
-            $slice: -3
+            $slice: -4
           }
         }
       },
@@ -191,5 +191,29 @@ const editAddress = async (req, res) => {
   }
 };
 
+const deleteAddress = async (req, res) => {
+  try {
+    const { token, index } = req.body;
 
-module.exports = { send_otp , verify_otp , completeProfile , addAddress , getAddress , editAddress };
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const contact = decoded.contact;
+
+    const user = await User.findOne({ contact });
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    if (!user.addresses[index]) {
+      return res.status(404).json({ message: "Address not found at the given index." });
+    }
+
+    user.addresses.splice(index, 1);
+    await user.save();
+
+    res.status(200).json({ message: "Address deleted successfully.", addresses: user.addresses });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to delete address", error: err.message });
+  }
+};
+
+module.exports = { send_otp , verify_otp , completeProfile , addAddress , getAddress , editAddress , deleteAddress };
