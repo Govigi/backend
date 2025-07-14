@@ -4,7 +4,7 @@ const productSchema = new mongoose.Schema({
   name: { type: String, required: true },
   category: { type: String },
   pricePerKg: { type: Number, required: true },
-   stock: {
+  stock: {
     type: String,
     enum: ['Available', 'Out of Stock'],
     required: true,
