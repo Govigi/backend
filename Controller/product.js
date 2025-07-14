@@ -7,9 +7,7 @@ const getAllProducts = async (req, res) => {
     const products = await Product.find({});
     const formatted = products.map(product => ({
       ...product.toObject(),
-      image: product.image || null,
-      price: product.pricePerKg,
-
+      image: product.image || null
     }));
     res.status(200).json(formatted);
   } catch (err) {
