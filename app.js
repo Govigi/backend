@@ -2,8 +2,6 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const router = require('./Routes/routes');
-const { initGridFS } = require('./Controller/utils/gridfs');
-const { initUpload } = require('./Controller/utils/upload')
 require('dotenv').config();
 
 const app = express();
@@ -24,9 +22,6 @@ mongoose.connect(
     }
 ).then( () => {
   console.log('MongoDB connected succesfully');
-
-  initUpload();
-  initGridFS(mongoose.connection);
   
   const Port = process.env.PORT || 8000;
   app.listen(Port, () => {

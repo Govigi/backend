@@ -4,9 +4,16 @@ const productSchema = new mongoose.Schema({
   name: { type: String, required: true },
   category: { type: String },
   pricePerKg: { type: Number, required: true },
-  stock: { type: Number, required: true },
-  image: { type: String },
-  status: { type: String, default: 'pending' }
+   stock: {
+    type: String,
+    enum: ['Available', 'Out of Stock'],
+    required: true,
+  },
+  image: {
+    url: { type: String },
+    public_id: { type: String }
+  }
+
 });
 
 module.exports = mongoose.model('product', productSchema);
