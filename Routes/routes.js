@@ -13,6 +13,7 @@ Router.post('/completeProfile', controller_auth.completeProfile);
 Router.post('/addAddress', controller_auth.addAddress);
 Router.patch('/editAddress', controller_auth.editAddress);
 Router.post('/getAddress', controller_auth.getAddress);
+Router.post('/deleteAddress', controller_auth.deleteAddress);
 
 //order
 Router.get('/userOrders/:userId', controller_order.getUserOrders);
