@@ -7,11 +7,13 @@ const getAllProducts = async (req, res) => {
     const products = await Product.find({});
     const formatted = products.map(product => ({
       ...product.toObject(),
-      image: product.image || null
+      image: product.image || null,
+      price: product.pricePerKg,
+
     }));
     res.status(200).json(formatted);
   } catch (err) {
-    res.status(500).json({ message: 'Failed to fetch products', error: err });
+    res.status(500).json({ message: 'Failed to fetch products', error: err });
   }
 };
 

@@ -18,7 +18,8 @@ const userSchema = new mongoose.Schema({
   addresses: [addressSchema],
   contact: { type: String, required: true, unique: true },
   otp: { type: String },
-  otpExpires: { type: Date}
+  otpExpires: { type: Date},
+  timestamp: { type: Date, default: Date.now }
 });
 
 module.exports = mongoose.model('user', userSchema);
