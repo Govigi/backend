@@ -19,6 +19,12 @@ const userSchema = new mongoose.Schema({
   contact: { type: String, required: true, unique: true },
   otp: { type: String },
   otpExpires: { type: Date},
+  wishlist: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'product'
+    }
+  ],
   timestamp: { type: Date, default: Date.now }
 });
 
