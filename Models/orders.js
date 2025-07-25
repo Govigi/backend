@@ -11,10 +11,20 @@ const orderSchema = new mongoose.Schema(
         price: { type: Number, required: true },
       },
     ],
+    address: [
+      {
+        city: {type: String},
+        contact: {type: String},
+        email: {type: String},
+        landmark: {type: String},
+        name: {type: String},
+        pincode: {type: String},
+        state: {type: String}
+      }
+    ],
     totalAmount: { type: Number, required: true },
     status: { type: String, default: "Pending" },
     scheduledDate: { type: Date },
-    phone: { type: String, required: true },
   },
   {
     timestamps: true,
