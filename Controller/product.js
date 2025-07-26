@@ -48,6 +48,7 @@ const updateProduct = async (req, res) => {
       category: req.body?.category,
       pricePerKg: req.body?.pricePerKg,
       stock: req.body?.stock,
+      currentStock: req.body?.currentStock
     };
 
     if(req.file){
