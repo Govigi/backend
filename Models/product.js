@@ -14,7 +14,8 @@ const productSchema = new mongoose.Schema({
       public_id: { type: String }
     },
     availableStock: { type: String},
-    timestamp: { type: Date, default: Date.now }
+    timestamp: { type: Date, default: Date.now },
+    currentStock: {type: Number, required: true}
   }
 );
 

@@ -19,7 +19,7 @@ const getAllProducts = async (req, res) => {
 const createProduct = async (req, res) => {
   let image = null;
   try {
-    const { name, category, pricePerKg, stock } = req.body;
+    const { name, category, pricePerKg, stock, currentStock } = req.body;
     if (req.file) {
       image = await uploadImage(req.file);
     }
@@ -29,7 +29,8 @@ const createProduct = async (req, res) => {
       category,
       pricePerKg,
       stock,
-      image
+      image,
+      currentStock
     });
 
     const savedProduct = await product.save();
