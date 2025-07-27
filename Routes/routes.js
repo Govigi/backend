@@ -22,7 +22,7 @@ Router.post("/getWishlist", controller_auth.getWishlist);
 Router.post("/togglewish", controller_auth.toggleWishlist);
 
 //order
-Router.get("/userOrders", controller_order.getUserOrders);
+Router.post("/userOrders", controller_order.getUserOrders);
 Router.patch("/updateStatus/:id", controller_order.updateOrderStatus);
 Router.post("/createOrder", controller_order.createOrder);
 Router.get("/getAllOrders", controller_order.getAllOrders);
