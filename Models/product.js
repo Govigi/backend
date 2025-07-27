@@ -15,7 +15,8 @@ const productSchema = new mongoose.Schema({
     },
     availableStock: { type: String},
     timestamp: { type: Date, default: Date.now },
-    currentStock: {type: Number, required: true}
+    currentStock: {type: Number, required: true},
+    minimumThreshold: {type: Number, required: true}
   }
 );
 
