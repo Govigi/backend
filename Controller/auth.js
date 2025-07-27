@@ -30,6 +30,7 @@ const send_otp = async (req, res) => {
 
     if(send)
     {
+      console.log("OTP : ",otp);
         user.otp = otp;
         user.otpExpires = Date.now() + 5 * 60 * 1000; // valid 5 min
         await user.save();

@@ -4,21 +4,21 @@ const jwt = require('jsonwebtoken');
 
 const JWT_SECRET = process.env.SCERET_KEY;
 const createOrder = async (req, res) => {
+  console.log("req :",req.body);
   try {
     const {
+      phone,
       address,
       items,
       totalAmount,
       scheduledDate,
-      token
     } = req.body;
 
-    const decoded = jwt.verify(token, JWT_SECRET);
-    const contact = decoded.contact;
     if (!items) {
       return res.status(400).json({ message: "Missing required fields" });
     }
-
+    const contact = phone;
+    console.log("Items :", items)
     const newOrder = await Order.create({
       address,
       items,
@@ -43,6 +43,7 @@ const createOrder = async (req, res) => {
 const getUserOrders = async (req, res) => {
   try {
     const { token } = req.body;
+    console.log("req :", token);
     if (!token) {
       return res.status(400).json({ message: "Token is required" });
     }
