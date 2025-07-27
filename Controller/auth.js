@@ -30,6 +30,7 @@ const send_otp = async (req, res) => {
 
     if(send)
     {
+      console.log("OTP : ",otp);
         user.otp = otp;
         user.otpExpires = Date.now() + 5 * 60 * 1000; // valid 5 min
         await user.save();
@@ -216,4 +217,58 @@ const deleteAddress = async (req, res) => {
   }
 };
 
-module.exports = { send_otp , verify_otp , completeProfile , addAddress , getAddress , editAddress , deleteAddress };
+const getWishlist = async (req, res) => {
+  try {
+    const { token } = req.body;
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const contact = decoded.contact;
+    const user = await User.findOne({ contact }).populate("wishlist");
+
+    if (!user) return res.status(404).json({ message: "User not found." });
+    res.status(200).json({ wishlist: user.wishlist });
+  } 
+  catch (err) {
+    res.status(500).json({ message: "Failed to fetch wishlist", error: err.message });
+  }
+};
+
+
+const toggleWishlist = async (req, res) => {
+  try {
+    const { token, productId } = req.body;
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const contact = decoded.contact;
+
+    const user = await User.findOne({ contact });
+    if (!user) return res.status(404).json({ message: "User not found." });
+
+    const index = user.wishlist.indexOf(productId);
+
+    let status;
+    if (index === -1) {
+      user.wishlist.push(productId);
+      status = "added";
+    } else {
+      user.wishlist.pull(productId);
+      status = "removed";
+    }
+
+    await user.save();
+
+    res.status(200).json({ status });
+  } catch (err) {
+    res.status(500).json({ message: "Toggle failed", error: err.message });
+  }
+}
+
+module.exports = { 
+  send_otp , 
+  verify_otp , 
+  completeProfile , 
+  addAddress , 
+  getAddress , 
+  editAddress , 
+  deleteAddress ,
+  getWishlist,
+  toggleWishlist
+};

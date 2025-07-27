@@ -1,42 +1,35 @@
 const Order = require("../Models/orders");
 const User = require("../Models/users");
+const jwt = require('jsonwebtoken');
 
+const JWT_SECRET = process.env.SCERET_KEY;
 const createOrder = async (req, res) => {
+  console.log("req :",req.body);
   try {
     const {
-      name,
-      email,
-      businessType,
-      address,
       phone,
+      address,
       items,
-      totalAmount = 0,
+      totalAmount,
       scheduledDate,
     } = req.body;
 
     if (!items) {
       return res.status(400).json({ message: "Missing required fields" });
     }
-
-    // const user = await User.findByIdAndUpdate(
-    //   userId,
-    //   {
-    //     name,
-    //     address,
-    //     email,
-    //     businessType,
-    //   },
-    //   {
-    //     new: true,
-    //   }
-    // );
-
+    const contact = phone;
+    console.log("Items :", items)
     const newOrder = await Order.create({
-      phone,
+      address,
       items,
       totalAmount,
       scheduledDate,
     });
+
+    const user = await User.findOne({ contact });
+    if (!user) return res.status(404).json({ message: "User not found." });
+    user.orders.push(newOrder._id);
+    await user.save();
 
     res
       .status(201)
@@ -49,8 +42,16 @@ const createOrder = async (req, res) => {
 
 const getUserOrders = async (req, res) => {
   try {
-    const { userId } = req.params;
-    const orders = await Order.find({ userId }).sort({ createdAt: -1 });
+    const { token } = req.body;
+    console.log("req :", token);
+    if (!token) {
+      return res.status(400).json({ message: "Token is required" });
+    }
+
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const contact = decoded.contact;
+    const data = await User.find({ contact }).populate('orders').sort({ createdAt: -1 });
+    const orders = data[0].orders;
 
     if (!orders || orders.length === 0) {
       return res.status(404).json({ message: "No orders found for this user" });

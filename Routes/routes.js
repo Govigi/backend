@@ -10,13 +10,19 @@ const upload = require("../Controller/utils/upload");
 Router.post("/sendOTP", controller_auth.send_otp);
 Router.post("/verifyOTP", controller_auth.verify_otp);
 Router.post("/completeProfile", controller_auth.completeProfile);
+
+//Address
 Router.post("/addAddress", controller_auth.addAddress);
 Router.patch("/editAddress", controller_auth.editAddress);
 Router.post("/getAddress", controller_auth.getAddress);
 Router.post("/deleteAddress", controller_auth.deleteAddress);
 
+//Wishlist
+Router.post("/getWishlist", controller_auth.getWishlist);
+Router.post("/togglewish", controller_auth.toggleWishlist);
+
 //order
-Router.get("/userOrders/:userId", controller_order.getUserOrders);
+Router.post("/userOrders", controller_order.getUserOrders);
 Router.patch("/updateStatus/:id", controller_order.updateOrderStatus);
 Router.post("/createOrder", controller_order.createOrder);
 Router.get("/getAllOrders", controller_order.getAllOrders);

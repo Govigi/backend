@@ -20,7 +20,7 @@ const getAllProducts = async (req, res) => {
 const createProduct = async (req, res) => {
   let image = null;
   try {
-    const { name, category, pricePerKg, stock } = req.body;
+    const { name, category, pricePerKg, stock, currentStock,minimumThreshold } = req.body;
     if (req.file) {
       image = await uploadImage(req.file);
     }
@@ -30,7 +30,9 @@ const createProduct = async (req, res) => {
       category,
       pricePerKg,
       stock,
-      image
+      image,
+      currentStock,
+      minimumThreshold
     });
 
     const savedProduct = await product.save();
@@ -48,6 +50,8 @@ const updateProduct = async (req, res) => {
       category: req.body?.category,
       pricePerKg: req.body?.pricePerKg,
       stock: req.body?.stock,
+      currentStock: req.body?.currentStock,
+      minimumThreshold: req.body?.minimumThreshold
     };
 
     if(req.file){
