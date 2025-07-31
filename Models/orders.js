@@ -24,6 +24,9 @@ const orderSchema = new mongoose.Schema(
     ],
     totalAmount: { type: Number, required: true },
     status: { type: String, default: "Pending" },
+    name: {type: String},
+    contact: {type: String},
+    paymentMethod: {type: String},
     scheduledDate: { type: Date },
   },
   {

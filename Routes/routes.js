@@ -6,6 +6,9 @@ const controller_order = require("../Controller/order");
 const controller_product = require("../Controller/product");
 const upload = require("../Controller/utils/upload");
 
+// Admin login
+Router.post("/admin/login", controller_auth.adminLogin);
+
 //Auth
 Router.post("/sendOTP", controller_auth.send_otp);
 Router.post("/verifyOTP", controller_auth.verify_otp);
@@ -22,7 +25,7 @@ Router.post("/getWishlist", controller_auth.getWishlist);
 Router.post("/togglewish", controller_auth.toggleWishlist);
 
 //order
-Router.get("/userOrders", controller_order.getUserOrders);
+Router.post("/userOrders", controller_order.getUserOrders);
 Router.patch("/updateStatus/:id", controller_order.updateOrderStatus);
 Router.post("/createOrder", controller_order.createOrder);
 Router.get("/getAllOrders", controller_order.getAllOrders);
