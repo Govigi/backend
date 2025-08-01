@@ -1,13 +1,12 @@
-const User = require('../Models/users');
-const jwt = require('jsonwebtoken');
-const sendOtp = require('./utils/sendOTP');
-const { authenticator } = require('otplib');
-require('dotenv').config();
-
+const User = require("../Models/users");
+const jwt = require("jsonwebtoken");
+const sendOtp = require("./utils/sendOTP");
+const { authenticator } = require("otplib");
+require("dotenv").config();
 
 const JWT_SECRET = process.env.SCERET_KEY;
 function generateOTP() {
-  return authenticator.generate(authenticator.generateSecret()).slice(0,4);
+  return authenticator.generate(authenticator.generateSecret()).slice(0, 4);
 }
 
 const send_otp = async (req, res) => {
@@ -15,63 +14,63 @@ const send_otp = async (req, res) => {
     const { contact } = req.body;
     let user = await User.findOne({ contact });
 
-    if (!user) 
-    {
-        const newUser = new User({
-            contact
-        });
+    if (!user) {
+      const newUser = new User({
+        contact,
+      });
 
-        await newUser.save();
-        user = newUser;
+      await newUser.save();
+      user = newUser;
     }
 
     const otp = generateOTP();
     const send = await sendOtp(contact, otp);
 
-    if(send)
-    {
-      console.log("OTP : ",otp);
-        user.otp = otp;
-        user.otpExpires = Date.now() + 5 * 60 * 1000; // valid 5 min
-        await user.save();
+    if (send) {
+      console.log("OTP : ", otp);
+      user.otp = otp;
+      user.otpExpires = Date.now() + 5 * 60 * 1000; // valid 5 min
+      await user.save();
 
-        res.json({ message: "OTP sent", userId: user._id });
+      res.json({ message: "OTP sent", userId: user._id });
     }
-  } 
-  catch (err) {
+  } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Failed to send OTP" });
   }
 };
 
-const verify_otp = async (req , res) => {
-    const { contact , otp } = req.body;
-    const user = await User.findOne({ contact });
+const verify_otp = async (req, res) => {
+  const { contact, otp } = req.body;
+  const user = await User.findOne({ contact });
 
-    if (!user) {
-        return res.status(404).json({ message: "User not found" });
-    }
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
 
-    if (user.otp !== otp) {
-        return res.status(400).json({ message: "Invalid OTP" });
-    }
+  if (user.otp !== otp) {
+    return res.status(400).json({ message: "Invalid OTP" });
+  }
 
-    if (user.otpExpires < Date.now()) {
-        return res.status(400).json({ message: "OTP expired" });
-    }
+  if (user.otpExpires < Date.now()) {
+    return res.status(400).json({ message: "OTP expired" });
+  }
 
-    user.otp = undefined;
-    user.otpExpires = undefined;
-    await user.save();
+  user.otp = undefined;
+  user.otpExpires = undefined;
+  await user.save();
 
-    const token = jwt.sign({ userId: user._id, contact: user.contact }, JWT_SECRET, { expiresIn: "1d" });
+  const token = jwt.sign(
+    { userId: user._id, contact: user.contact },
+    JWT_SECRET,
+    { expiresIn: "1d" }
+  );
 
-    if(user.firstName === undefined)
-    {
-      return res.json({ message: "OTP verified", token , isNew: true });
-    }
-    res.json({ message: "OTP verified", token });
-}
+  if (user.firstName === undefined) {
+    return res.json({ message: "OTP verified", token, isNew: true });
+  }
+  res.json({ message: "OTP verified", token });
+};
 
 const completeProfile = async (req, res) => {
   try {
@@ -98,10 +97,11 @@ const completeProfile = async (req, res) => {
     }
 
     res.status(200).json({ message: "Profile completed successfully.", user });
-  } 
-  catch (err) {
+  } catch (err) {
     console.error("JWT decode error:", err);
-    res.status(500).json({ message: "Failed to complete profile", error: err.message });
+    res
+      .status(500)
+      .json({ message: "Failed to complete profile", error: err.message });
   }
 };
 
@@ -115,7 +115,8 @@ const addAddress = async (req, res) => {
     const user = await User.findOne({ contact });
     if (!user) return res.status(404).json({ message: "User not found." });
 
-    address.name = address.name || `${user.firstName || ""} ${user.lastName || ""}`.trim();
+    address.name =
+      address.name || `${user.firstName || ""} ${user.lastName || ""}`.trim();
     address.email = address.email || user.email;
     address.contact = address.contact || user.contact;
 
@@ -136,16 +137,20 @@ const addAddress = async (req, res) => {
         $push: {
           addresses: {
             $each: [address],
-            $slice: -4
-          }
-        }
+            $slice: -4,
+          },
+        },
       },
       { new: true }
     );
 
-    res.status(200).json({ message: "Address added successfully.", user: updatedUser });
+    res
+      .status(200)
+      .json({ message: "Address added successfully.", user: updatedUser });
   } catch (err) {
-    res.status(500).json({ message: "Failed to add address", error: err.message });
+    res
+      .status(500)
+      .json({ message: "Failed to add address", error: err.message });
   }
 };
 
@@ -168,7 +173,9 @@ const getAddress = async (req, res) => {
 
     res.status(200).json({ addresses: user.addresses || [] });
   } catch (err) {
-    res.status(500).json({ message: "Failed to fetch addresses", error: err.message });
+    res
+      .status(500)
+      .json({ message: "Failed to fetch addresses", error: err.message });
   }
 };
 
@@ -183,12 +190,19 @@ const editAddress = async (req, res) => {
       return res.status(404).json({ message: "Address not found" });
     }
 
-    user.addresses[index] = { ...user.addresses[index]._doc, ...updatedAddress };
+    user.addresses[index] = {
+      ...user.addresses[index]._doc,
+      ...updatedAddress,
+    };
     await user.save();
 
-    res.status(200).json({ message: "Address updated", addresses: user.addresses });
+    res
+      .status(200)
+      .json({ message: "Address updated", addresses: user.addresses });
   } catch (err) {
-    res.status(500).json({ message: "Failed to update address", error: err.message });
+    res
+      .status(500)
+      .json({ message: "Failed to update address", error: err.message });
   }
 };
 
@@ -205,15 +219,24 @@ const deleteAddress = async (req, res) => {
     }
 
     if (!user.addresses[index]) {
-      return res.status(404).json({ message: "Address not found at the given index." });
+      return res
+        .status(404)
+        .json({ message: "Address not found at the given index." });
     }
 
     user.addresses.splice(index, 1);
     await user.save();
 
-    res.status(200).json({ message: "Address deleted successfully.", addresses: user.addresses });
+    res
+      .status(200)
+      .json({
+        message: "Address deleted successfully.",
+        addresses: user.addresses,
+      });
   } catch (err) {
-    res.status(500).json({ message: "Failed to delete address", error: err.message });
+    res
+      .status(500)
+      .json({ message: "Failed to delete address", error: err.message });
   }
 };
 
@@ -272,3 +295,39 @@ module.exports = {
   getWishlist,
   toggleWishlist
 };
+
+// --- Admin Login ---
+const Admin = require("../Models/admins");
+
+const adminLogin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res
+        .status(400)
+        .json({ message: "Email and password are required." });
+    }
+    const admin = await Admin.findOne({ email });
+    if (!admin) {
+      return res.status(401).json({ message: "Invalid credentials." });
+    }
+    // If password is hashed, use bcrypt.compare. If not, use plain comparison.
+    // For now, assume plain text (change to bcrypt if you hash passwords on admin creation)
+    // const isMatch = await bcrypt.compare(password, admin.password);
+    const isMatch = password === admin.password;
+    if (!isMatch) {
+      return res.status(401).json({ message: "Invalid credentials." });
+    }
+    // Optionally, generate a JWT for admin session
+    const token = jwt.sign(
+      { adminId: admin._id, email: admin.email },
+      JWT_SECRET,
+      { expiresIn: "1d" }
+    );
+    res.status(200).json({ message: "Login successful", token });
+  } catch (err) {
+    res.status(500).json({ message: "Login failed", error: err.message });
+  }
+};
+
+module.exports.adminLogin = adminLogin;

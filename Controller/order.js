@@ -12,6 +12,8 @@ const createOrder = async (req, res) => {
       items,
       totalAmount,
       scheduledDate,
+      name,
+      token
     } = req.body;
 
     if (!items) {
@@ -24,6 +26,8 @@ const createOrder = async (req, res) => {
       items,
       totalAmount,
       scheduledDate,
+      name,
+      contact,
     });
 
     const user = await User.findOne({ contact });
