@@ -6,6 +6,9 @@ const controller_order = require("../Controller/order");
 const controller_product = require("../Controller/product");
 const upload = require("../Controller/utils/upload");
 
+// Admin login
+Router.post("/admin/login", controller_auth.adminLogin);
+
 //Auth
 Router.post("/sendOTP", controller_auth.send_otp);
 Router.post("/verifyOTP", controller_auth.verify_otp);
