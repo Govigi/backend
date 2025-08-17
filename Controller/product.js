@@ -4,13 +4,36 @@ const cloudinary = require('cloudinary').v2;
 
 const getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find({});
+    const page = parseInt(req.query.page);
+    const perPage = parseInt(req.query.perPage);
+
+    let products, total, totalPages;
+
+    if (!page || !perPage) {
+      products = await Product.find({});
+      total = products.length;
+      totalPages = 1;
+    } else {
+      total = await Product.countDocuments({});
+      products = await Product.find({})
+        .skip((page - 1) * perPage)
+        .limit(perPage);
+      totalPages = Math.ceil(total / perPage);
+    }
+
     const formatted = products.map(product => ({
       ...product.toObject(),
       image: product.image || null,
       price: product.pricePerKg,
     }));
-    res.status(200).json(formatted);
+
+    res.status(200).json({
+      products: formatted,
+      page: page || 1,
+      perPage: perPage || total,
+      total,
+      totalPages
+    });
   } catch (err) {
     res.status(500).json({ message: 'Failed to fetch products', error: err });
   }
