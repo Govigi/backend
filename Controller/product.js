@@ -1,6 +1,7 @@
-const Product = require('../Models/product');
-const { uploadImage } = require('../Controller/utils/upload_product');
-const cloudinary = require('cloudinary').v2;
+import Product from '../Models/product.js';
+import { uploadImage } from '../Controller/utils/upload_product.js';
+import cloudinary from 'cloudinary';
+const { v2: cloudinaryV2 } = cloudinary;
 
 const getAllProducts = async (req, res) => {
   try {
@@ -78,7 +79,7 @@ const updateProduct = async (req, res) => {
 
     if(req.file){
       if (product.image?.public_id) {
-        await cloudinary.uploader.destroy(product.image.public_id);
+        await cloudinaryV2.uploader.destroy(product.image.public_id);
       }
       updates.image = await uploadImage(req.file);
     }
@@ -103,7 +104,7 @@ const deleteProduct = async (req , res) => {
   }
 }
 
-module.exports = {
+export {
   getAllProducts,
   createProduct,
   updateProduct,
