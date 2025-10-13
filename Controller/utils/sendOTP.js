@@ -1,5 +1,6 @@
-const axios = require("axios");
-require("dotenv").config();
+import axios from "axios";
+import dotenv from 'dotenv';
+dotenv.config();
 
 async function sendOtp(mobile, otp) {
   const { TWO_FACTOR_API_KEY, TWO_FACTOR_TEMPLATE_NAME } = process.env;
@@ -16,4 +17,4 @@ async function sendOtp(mobile, otp) {
   }
 }
 
-module.exports = sendOtp;
+export default sendOtp;
