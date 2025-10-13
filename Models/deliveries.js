@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const deliverySchema = new mongoose.Schema({
   orderId: [
@@ -12,4 +12,4 @@ const deliverySchema = new mongoose.Schema({
   timestamp: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model('deliveries', deliverySchema);
+export default mongoose.model('deliveries', deliverySchema);
