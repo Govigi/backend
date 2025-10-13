@@ -243,13 +243,30 @@ const deleteAddress = async (req, res) => {
 
 const getWishlist = async (req, res) => {
   try {
-    const { token } = req.body;
+    const { token, page, perPage } = req.body;
     const decoded = jwt.verify(token, JWT_SECRET);
     const contact = decoded.contact;
     const user = await User.findOne({ contact }).populate("wishlist");
 
     if (!user) return res.status(404).json({ message: "User not found." });
-    res.status(200).json({ wishlist: user.wishlist });
+
+    let wishlist = user.wishlist || [];
+    if (page && perPage) {
+      const p = parseInt(page, 10) || 1;
+      const pp = parseInt(perPage, 10) || 10;
+      const start = (p - 1) * pp;
+      const end = start + pp;
+      const paginated = wishlist.slice(start, end);
+      return res.status(200).json({
+        wishlist: paginated,
+        total: wishlist.length,
+        page: p,
+        perPage: pp,
+        totalPages: Math.ceil(wishlist.length / pp)
+      });
+    }
+
+    res.status(200).json({ wishlist });
   } 
   catch (err) {
     res.status(500).json({ message: "Failed to fetch wishlist", error: err.message });

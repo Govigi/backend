@@ -4,7 +4,14 @@ const Router = express.Router();
 const controller_auth = require("../Controller/auth");
 const controller_order = require("../Controller/order");
 const controller_product = require("../Controller/product");
+const controller_template = require("../Controller/templateController");
+
 const upload = require("../Controller/utils/upload");
+
+//Testing
+Router.get("/test", (req, res) => {
+  res.send("API is working");
+});
 
 // Admin login
 Router.post("/admin/login", controller_auth.adminLogin);
@@ -23,6 +30,9 @@ Router.post("/deleteAddress", controller_auth.deleteAddress);
 //Wishlist
 Router.post("/getWishlist", controller_auth.getWishlist);
 Router.post("/togglewish", controller_auth.toggleWishlist);
+
+//template
+Router.post("/createTemplate", controller_template.createTemplate);
 
 //order
 Router.post("/userOrders", controller_order.getUserOrders);
