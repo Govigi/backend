@@ -1,6 +1,6 @@
-const Order = require("../Models/orders");
-const User = require("../Models/users");
-const jwt = require('jsonwebtoken');
+import Order from "../Models/orders.js";
+import User from "../Models/users.js";
+import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.SCERET_KEY;
 const createOrder = async (req, res) => {
@@ -111,4 +111,4 @@ const getAllOrders = async (req, res) => {
   }
 };
 
-module.exports = { createOrder, getUserOrders, updateOrderStatus, getAllOrders };
+export { createOrder, getUserOrders, updateOrderStatus, getAllOrders };

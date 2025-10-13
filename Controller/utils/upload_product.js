@@ -1,7 +1,9 @@
-const cloudinary = require('cloudinary').v2;
-require('dotenv').config();
+import cloudinary from 'cloudinary';
+import dotenv from 'dotenv';
+dotenv.config();
+const { v2: cloudinaryV2 } = cloudinary;
 
-cloudinary.config({
+cloudinaryV2.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SCERET_KEY  // ensure the key is correct (typo in SCERET?)
@@ -9,7 +11,7 @@ cloudinary.config({
 
 const uploadImage = (file) => {
   return new Promise((resolve, reject) => {
-    const stream = cloudinary.uploader.upload_stream(
+  const stream = cloudinaryV2.uploader.upload_stream(
       { resource_type: 'image' },
       (error, result) => {
         if (error) {
@@ -27,5 +29,4 @@ const uploadImage = (file) => {
     stream.end(file.buffer);
   });
 };
-
-module.exports = { uploadImage };
+export { uploadImage };

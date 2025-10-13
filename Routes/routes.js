@@ -1,12 +1,13 @@
-const express = require("express");
+import express from "express";
 const Router = express.Router();
 
-const controller_auth = require("../Controller/auth");
-const controller_order = require("../Controller/order");
-const controller_product = require("../Controller/product");
-const controller_template = require("../Controller/templateController");
+import * as controller_auth from "../Controller/auth.js";
+import * as controller_order from "../Controller/order.js";
+import * as controller_product from "../Controller/product.js";
+import * as controller_template from "../Controller/templateController.js";
+import * as controller_customer from "../Controller/CustomerController.js";
 
-const upload = require("../Controller/utils/upload");
+import upload from "../Controller/utils/upload.js";
 
 //Testing
 Router.get("/test", (req, res) => {
@@ -20,6 +21,14 @@ Router.post("/admin/login", controller_auth.adminLogin);
 Router.post("/sendOTP", controller_auth.send_otp);
 Router.post("/verifyOTP", controller_auth.verify_otp);
 Router.post("/completeProfile", controller_auth.completeProfile);
+
+//Customer
+Router.post("/createCustomer", controller_customer.createCustomerController);
+Router.get("/getCustomer/:id", controller_customer.getCustomerByIdController);
+Router.get("/getAllCustomers", controller_customer.getAllCustomersController);
+Router.get("/getAllCustomersCount", controller_customer.getAllCustomersCountController);
+
+Router.get("/getAllCustomersStats", controller_customer.getAllCustomersStatsController);
 
 //Address
 Router.post("/addAddress", controller_auth.addAddress);
@@ -54,4 +63,4 @@ Router.patch(
 );
 Router.delete("/deleteProduct/:id", controller_product.deleteProduct);
 
-module.exports = Router;
+export default Router;

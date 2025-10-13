@@ -1,8 +1,9 @@
-const User = require("../Models/users");
-const jwt = require("jsonwebtoken");
-const sendOtp = require("./utils/sendOTP");
-const { authenticator } = require("otplib");
-require("dotenv").config();
+import User from "../Models/users.js";
+import jwt from "jsonwebtoken";
+import sendOtp from "./utils/sendOTP.js";
+import { authenticator } from "otplib";
+import dotenv from 'dotenv';
+dotenv.config();
 
 const JWT_SECRET = process.env.SCERET_KEY;
 function generateOTP() {
@@ -301,7 +302,7 @@ const toggleWishlist = async (req, res) => {
   }
 }
 
-module.exports = { 
+export { 
   send_otp , 
   verify_otp , 
   completeProfile , 
@@ -314,7 +315,7 @@ module.exports = {
 };
 
 // --- Admin Login ---
-const Admin = require("../Models/admins");
+import Admin from "../Models/admins.js";
 
 const adminLogin = async (req, res) => {
   try {
@@ -347,4 +348,4 @@ const adminLogin = async (req, res) => {
   }
 };
 
-module.exports.adminLogin = adminLogin;
+export { adminLogin };
