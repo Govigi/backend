@@ -15,7 +15,7 @@ class CustomerService extends BaseRepository {
     }
 
     async getAllCustomers() {
-        return await this.findAll();
+        return await Customer.find().populate("customerType", "typeName");
     }
 
     async getAllCustomersStats() {

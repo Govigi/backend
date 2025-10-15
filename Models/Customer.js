@@ -12,9 +12,9 @@ const customerSchema = new mongoose.Schema({
     customerContactPerson: { type: String, required: true },
     customerStatus: { type: String, enum: ['active', 'inactive','pending'], default: 'pending' },
     customerType:{
-        type: String,
-        enum:["restaurant","hotel","cafe","bar","PG","hostel","retail store","grocery store","other"],
-        default:"other"
+        type:mongoose.Schema.Types.ObjectId,
+        ref: 'CustomerType',
+        required: true
     }
 },{timestamps: true});
 

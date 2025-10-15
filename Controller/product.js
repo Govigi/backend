@@ -2,6 +2,7 @@ import Product from '../Models/product.js';
 import { uploadImage } from '../Controller/utils/upload_product.js';
 import cloudinary from 'cloudinary';
 const { v2: cloudinaryV2 } = cloudinary;
+import productsService from '../Services/ProductsService.js';
 
 const getAllProducts = async (req, res) => {
   try {
@@ -104,9 +105,20 @@ const deleteProduct = async (req , res) => {
   }
 }
 
+const getProductsStats = async (req, res) => {
+  try {
+    const stats = await productsService.getAllProductsStats();
+    res.status(200).json(stats);
+  } catch (err) {
+    console.error("Error fetching product stats:", err);
+    res.status(500).json({ message: 'Failed to fetch product stats', error: err });
+  }
+}
+
 export {
   getAllProducts,
   createProduct,
   updateProduct,
-  deleteProduct
+  deleteProduct,
+  getProductsStats
 };
