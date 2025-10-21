@@ -1,4 +1,6 @@
+import Customer from "../Models/Customer.js";
 import customerService from "../Services/CustomerService.js";
+import CustomerTypesService from "../Services/CustomerTypesService.js";
 
 const createCustomerController = async (req, res) => {
     try {
@@ -26,6 +28,7 @@ const getCustomerByIdController = async (req, res) => {
 const getAllCustomersController = async (req, res) => {
     try {
         const customers = await customerService.getAllCustomers();
+        
         res.status(200).json(customers);
     }
     catch (error) {

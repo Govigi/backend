@@ -6,6 +6,8 @@ import * as controller_order from "../Controller/order.js";
 import * as controller_product from "../Controller/product.js";
 import * as controller_template from "../Controller/templateController.js";
 import * as controller_customer from "../Controller/CustomerController.js";
+import * as controller_country from "../Controller/Country-State-City-Controller.js";
+import * as controller_customerType from "../Controller/CustomerTypesController.js";
 
 import upload from "../Controller/utils/upload.js";
 
@@ -29,6 +31,10 @@ Router.get("/getAllCustomers", controller_customer.getAllCustomersController);
 Router.get("/getAllCustomersCount", controller_customer.getAllCustomersCountController);
 
 Router.get("/getAllCustomersStats", controller_customer.getAllCustomersStatsController);
+
+//Customer Types
+Router.post("/createCustomerType", controller_customerType.createCustomerType);
+Router.get("/getAllCustomerTypes", controller_customerType.getAllCustomerTypes);
 
 //Address
 Router.post("/addAddress", controller_auth.addAddress);
@@ -56,11 +62,27 @@ Router.post(
   controller_product.createProduct
 );
 Router.get("/getAllProducts", controller_product.getAllProducts);
+Router.get("/getProductsStats", controller_product.getProductsStats);
 Router.patch(
   "/updateProduct/:id",
   upload.single("image"),
   controller_product.updateProduct
 );
 Router.delete("/deleteProduct/:id", controller_product.deleteProduct);
+
+//Countries and States
+Router.get(
+  "/getCountries",
+  controller_country.getCountries
+);
+
+Router.get(
+  "/getStates/:countryCode", controller_country.getStatesByCountry
+)
+
+Router.get(
+  "/getCities/:countryCode/:stateCode",
+  controller_country.getCitiesByState
+);
 
 export default Router;
