@@ -1,6 +1,7 @@
 import Order from "../Models/orders.js";
 import User from "../Models/users.js";
 import jwt from 'jsonwebtoken';
+import { generateOrderNumber } from './utils/orderNumberGenerator.js';
 
 const JWT_SECRET = process.env.SCERET_KEY;
 const createOrder = async (req, res) => {
@@ -21,7 +22,12 @@ const createOrder = async (req, res) => {
     }
     const contact = phone;
     console.log("Items :", items)
+    
+    // Generate custom order number with GOVIGI prefix, mobile last 4 digits, date, and sequence
+    const orderNumber = await generateOrderNumber(contact, name);
+
     const newOrder = await Order.create({
+      orderNumber,
       address,
       items,
       totalAmount,

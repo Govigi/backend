@@ -47,6 +47,9 @@ const createProduct = async (req, res) => {
     const { name, category, pricePerKg, stock, currentStock,minimumThreshold } = req.body;
     if (req.file) {
       image = await uploadImage(req.file);
+      if (!image) {
+        return res.status(500).json({ message: 'Image upload failed' });
+      }
     }
 
     const product = new Product({

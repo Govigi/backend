@@ -8,6 +8,7 @@ import * as controller_template from "../Controller/templateController.js";
 import * as controller_customer from "../Controller/CustomerController.js";
 import * as controller_country from "../Controller/Country-State-City-Controller.js";
 import * as controller_customerType from "../Controller/CustomerTypesController.js";
+import * as controller_category from "../Controller/CategoriesController.js";
 
 import upload from "../Controller/utils/upload.js";
 
@@ -70,6 +71,11 @@ Router.patch(
   controller_product.updateProduct
 );
 Router.delete("/deleteProduct/:id", controller_product.deleteProduct);
+
+//Categories
+Router.post("/createCategory", upload.single("image"), controller_category.createCategoryController);
+Router.get("/getAllCategories", controller_category.getAllCategoriesController);
+Router.get("/getAllCategoriesStats", controller_category.getAllCategoriesStatsController);
 
 //Countries and States
 Router.get(
