@@ -14,6 +14,7 @@ import upload from "../Controller/utils/upload.js";
 
 //Testing
 Router.get("/test", (req, res) => {
+  console.log('api called');
   res.send("API is working");
 });
 
