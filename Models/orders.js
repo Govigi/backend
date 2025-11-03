@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 const orderSchema = new mongoose.Schema(
   {
+    orderNumber: { type: String, unique: true, sparse: true },
     items: [
       {
         productId: { type: String, required: true },
