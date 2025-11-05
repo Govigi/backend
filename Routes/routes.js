@@ -56,6 +56,7 @@ Router.post("/userOrders", controller_order.getUserOrders);
 Router.patch("/updateStatus/:id", controller_order.updateOrderStatus);
 Router.post("/createOrder", controller_order.createOrder);
 Router.get("/getAllOrders", controller_order.getAllOrders);
+Router.get("/getOrder/:id", controller_order.getOrderById);
 
 //product
 Router.post(
