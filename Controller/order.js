@@ -117,4 +117,19 @@ const getAllOrders = async (req, res) => {
   }
 };
 
-export { createOrder, getUserOrders, updateOrderStatus, getAllOrders };
+const getOrderById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const order = await Order.findById(id);
+
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+    res.status(200).json(order);
+  } catch (err) {
+    console.error("Get Order By ID Error:", err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+}
+
+export { createOrder, getUserOrders, updateOrderStatus, getAllOrders, getOrderById };
