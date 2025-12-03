@@ -58,9 +58,24 @@ const getUserOrders = async (req, res) => {
       return res.status(400).json({ message: "Token is required" });
     }
 
-    const decoded = jwt.verify(token, JWT_SECRET);
+    let decoded;
+    try {
+      decoded = jwt.verify(token, JWT_SECRET);
+    } catch (tokenErr) {
+      console.error("JWT verification failed:", tokenErr.message);
+      return res.status(401).json({ 
+        message: "Invalid or expired token",
+        error: tokenErr.message
+      });
+    }
+
     const contact = decoded.contact;
     const data = await User.find({ contact }).populate('orders').sort({ createdAt: -1 });
+    
+    if (!data || data.length === 0) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
     const orders = data[0].orders;
 
     if (!orders || orders.length === 0) {
@@ -70,7 +85,7 @@ const getUserOrders = async (req, res) => {
     res.status(200).json(orders);
   } catch (err) {
     console.error("Get Orders Error:", err);
-    res.status(500).json({ message: "Internal Server Error" });
+    res.status(500).json({ message: "Internal Server Error", error: err.message });
   }
 };
 
@@ -132,4 +147,42 @@ const getOrderById = async (req, res) => {
   }
 }
 
-export { createOrder, getUserOrders, updateOrderStatus, getAllOrders, getOrderById };
+const getCustomerOrderCount = async (req, res) => {
+  try {
+    const { token } = req.body;
+
+    console.log("req :", token);
+
+    if (!token) {
+      return res.status(400).json({ message: "Token is required" });
+    }
+
+    // Verify JWT token and extract contact
+    let decoded;
+    try {
+      decoded = jwt.verify(token, JWT_SECRET);
+    } catch (tokenErr) {
+      console.error("JWT verification failed:", tokenErr.message);
+      return res.status(401).json({ 
+        message: "Invalid or expired token",
+        error: tokenErr.message
+      });
+    }
+
+    const contact = decoded.contact;
+    
+    if (!contact) {
+      return res.status(400).json({ message: "Contact information not found in token" });
+    }
+
+    // Count orders for this contact
+    const orderCount = await Order.countDocuments({ contact });
+    
+    res.status(200).json({ contact, orderCount });
+  } catch (err) {
+    console.error("Get Customer Order Count Error:", err);
+    res.status(500).json({ message: "Internal Server Error", error: err.message });
+  }
+};
+
+export { createOrder, getUserOrders, updateOrderStatus, getAllOrders, getOrderById, getCustomerOrderCount };
