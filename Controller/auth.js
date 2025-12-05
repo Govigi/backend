@@ -6,6 +6,8 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const JWT_SECRET = process.env.SCERET_KEY;
+const testingMobileNumber = process.env.TESTING_MOBILE_NUMBER || "";
+
 function generateOTP() {
   return authenticator.generate(authenticator.generateSecret()).slice(0, 4);
 }
@@ -64,7 +66,7 @@ const verify_otp = async (req, res) => {
   const token = jwt.sign(
     { userId: user._id, contact: user.contact },
     JWT_SECRET,
-    { expiresIn: "1d" }
+    { expiresIn: "14d" }
   );
 
   if (user.firstName === undefined) {
