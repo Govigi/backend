@@ -28,11 +28,12 @@ const addAddress = async (req, res) => {
             });
         }
 
-        console.log("Decoded UserId :", decoded.userId);
+        console.log("Decoded UserId :", decoded.customerId);
         console.log("Request Body :", req.body);
 
         const address = await Address.create({
-            userId: decoded.userId,
+
+            customerId: decoded.customerId,
             placeId: req.body.placeId,
             formattedAddress: req.body.formattedAddress,
             rawAddress: req.body.rawAddress,
@@ -45,7 +46,7 @@ const addAddress = async (req, res) => {
         // If marked as primary, make sure others are not primary
         if (address.isPrimary) {
             await Address.updateMany(
-                { userId: decoded.userId, _id: { $ne: address._id } },
+                { customerId: decoded.customerId, _id: { $ne: address._id } },
                 { $set: { isPrimary: false } }
             );
         }
