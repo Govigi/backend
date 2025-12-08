@@ -5,7 +5,7 @@ import { generateOrderNumber } from './utils/orderNumberGenerator.js';
 import { creditVigiCoins } from "../Services/WalletService.js";
 import Address from "../Models/Address.js";
 import Product from "../Models/product.js";
-import Customer from "../Models/customer.js";
+import Customer from "../Models/Customer.js";
 
 const JWT_SECRET = process.env.SCERET_KEY;
 
