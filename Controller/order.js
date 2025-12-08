@@ -5,7 +5,7 @@ import { generateOrderNumber } from './utils/orderNumberGenerator.js';
 import { creditVigiCoins } from "../Services/WalletService.js";
 import Address from "../Models/Address.js";
 import Product from "../Models/product.js";
-import Customer from "../Models/customer.js";
+import Customer from "../Models/Customer.js";
 
 const JWT_SECRET = process.env.SCERET_KEY;
 
@@ -44,7 +44,41 @@ const placeCustomerOrder = async (req, res) => {
       return res.status(403).json({ message: "Your account is pending admin approval." });
     }
 
-    const { items, addressId, scheduledDate, name } = req.body;
+    const { items, addressId, scheduledDate, name, scheduledTimeSlot } = req.body;
+
+    // Scheduling Validation
+    if (scheduledDate) {
+      const scheduleDt = new Date(scheduledDate);
+      const now = new Date();
+
+      // Calculate tomorrow's date (start of day)
+      const tomorrow = new Date(now);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      tomorrow.setHours(0, 0, 0, 0);
+
+      // Calculate max date (7 days from tomorrow)
+      const maxDate = new Date(tomorrow);
+      maxDate.setDate(maxDate.getDate() + 7);
+
+      // Check if scheduled date is at least tomorrow
+      const scheduleDateOnly = new Date(scheduleDt);
+      scheduleDateOnly.setHours(0, 0, 0, 0);
+
+      const today = new Date(now);
+      today.setHours(0, 0, 0, 0);
+
+      if (scheduleDateOnly <= today) {
+        return res.status(400).json({ message: "Orders can only be scheduled for tomorrow onwards." });
+      }
+
+      if (scheduleDateOnly > maxDate) {
+        return res.status(400).json({ message: "Orders can only be scheduled up to 7 days in advance." });
+      }
+
+      if (!scheduledTimeSlot) {
+        return res.status(400).json({ message: "Time slot is required for scheduled orders." });
+      }
+    }
 
     const address = await Address.findById(addressId);
 
@@ -81,6 +115,7 @@ const placeCustomerOrder = async (req, res) => {
       addressId,
       items: orderItems,
       scheduledDate,
+      scheduledTimeSlot,
       name,
       contact: customer.customerPhone,
       totalAmount
@@ -119,7 +154,7 @@ const getCustomerOrders = async (req, res) => {
 
     const customerId = decoded.customerId;
 
-    const data = await Order.find({ customerId });
+    const data = await Order.find({ customerId }).sort({ createdAt: -1 });
 
     console.log("Data :", data);
 
@@ -269,8 +304,8 @@ const updatePaymentStatus = async (req, res) => {
       return res.status(404).json({ message: "Order not found" });
     }
 
-    // If status is changing to Success, credit wallet
-    if (paymentStatus === "Success" && order.paymentStatus !== "Success") {
+    // If status is changing to Paid, credit wallet
+    if (paymentStatus === "Paid" && order.paymentStatus !== "Paid") {
       await creditVigiCoins(order.customerId, order.totalAmount, order._id);
     }
 
