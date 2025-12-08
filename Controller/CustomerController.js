@@ -1,6 +1,9 @@
 import Customer from "../Models/Customer.js";
 import customerService from "../Services/CustomerService.js";
 import CustomerTypesService from "../Services/CustomerTypesService.js";
+import jwt from "jsonwebtoken";
+import dotenv from 'dotenv';
+dotenv.config();
 
 const createCustomerController = async (req, res) => {
     try {
@@ -28,7 +31,7 @@ const getCustomerByIdController = async (req, res) => {
 const getAllCustomersController = async (req, res) => {
     try {
         const customers = await customerService.getAllCustomers();
-        
+
         res.status(200).json(customers);
     }
     catch (error) {
@@ -45,6 +48,23 @@ const getAllCustomersCountController = async (req, res) => {
     }
 };
 
+const getCustomerProfileController = async (req, res) => {
+    try {
+        const { token } = req.token;
+        if (!token) return res.status(401).json({ message: "No token provided" });
+
+        const decoded = jwt.verify(token, process.env.SCERET_KEY);
+        const customer = await customerService.getCustomerById(decoded.customerId);
+
+        if (!customer) {
+            return res.status(404).json({ message: "Customer not found" });
+        }
+        res.status(200).json(customer);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
 const getAllCustomersStatsController = async (req, res) => {
     try {
         const stats = await customerService.getAllCustomersStats();
@@ -54,4 +74,4 @@ const getAllCustomersStatsController = async (req, res) => {
     }
 };
 
-export { createCustomerController, getCustomerByIdController, getAllCustomersController, getAllCustomersCountController, getAllCustomersStatsController };
+export { createCustomerController, getCustomerByIdController, getAllCustomersController, getAllCustomersCountController, getAllCustomersStatsController, getCustomerProfileController };
