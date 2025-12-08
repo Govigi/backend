@@ -2,7 +2,7 @@ import Customer from "../Models/Customer.js";
 import BaseRepository from "../Repository/BaseRepository.js";
 
 class CustomerService extends BaseRepository {
-    constructor(){
+    constructor() {
         super(Customer);
     }
 
@@ -15,7 +15,7 @@ class CustomerService extends BaseRepository {
     }
 
     async getAllCustomers() {
-        return await Customer.find().populate("customerType", "typeName");
+        return await Customer.find().populate("customerType", "typeName").populate("customerAddress", "address");
     }
 
     async getAllCustomersStats() {
