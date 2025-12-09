@@ -205,7 +205,9 @@ const updateOrderStatus = async (req, res) => {
 
 const getAllOrders = async (req, res) => {
   try {
-    const orders = await Order.find().sort({ createdAt: -1 });
+    const orders = await Order.find()
+      .populate('customerId', 'customerName customerPhone customerContactPerson customerAddress customerType')
+      .sort({ createdAt: -1 });
 
     if (!orders || orders.length === 0) {
       return res.status(404).json({ message: "No orders found" });
@@ -237,16 +239,19 @@ const getOrderById = async (req, res) => {
       });
     }
 
-    const customerId = decoded.customerId;
-
     const { id } = req.params;
 
-    const order = await Order.findById(id);
-    const orderAddress = await Address.findById(order.addressId);
+    const order = await Order.findById(id).populate('customerId', 'customerName customerPhone customerContactPerson customerAddress customerType');
 
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
     }
+
+    let orderAddress = null;
+    if (order.addressId) {
+      orderAddress = await Address.findById(order.addressId);
+    }
+
     res.status(200).json({ order, orderAddress });
   } catch (err) {
     console.error("Get Order By ID Error:", err);
