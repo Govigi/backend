@@ -13,20 +13,23 @@ app.use(cors({
 }));
 
 
+import adminRoutes from './Routes/adminRoutes.js';
+
 app.use('/', router);
+app.use('/admin', adminRoutes);
 
 mongoose.connect(
-    process.env.MONGODB,
-    { 
-      useNewUrlParser: true, 
-      useUnifiedTopology: true 
-    }
-).then( () => {
+  process.env.MONGODB,
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  }
+).then(() => {
   console.log('MongoDB connected succesfully');
-  
+
   const Port = process.env.PORT || 8000;
   app.listen(Port, () => {
     console.log(`Server started at port: ${Port}`);
   })
 })
-.catch((err) => console.log('error', err.message))
+  .catch((err) => console.log('error', err.message))

@@ -1,4 +1,4 @@
-import Customer from "../Models/customer.js";
+import Customer from "../Models/Customer.js";
 import jwt from "jsonwebtoken";
 import sendOtp from "./utils/sendOTP.js";
 import Otp from "../Models/OtpSchema.js";

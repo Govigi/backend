@@ -10,7 +10,7 @@ class OrderService {
         end.setHours(23, 59, 59, 999);
 
         return await Order.find({
-            createdAt: { $gte: start, $lte: end }
+            scheduledDate: { $gte: start, $lte: end }
         });
     }
 
