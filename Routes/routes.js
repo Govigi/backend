@@ -18,6 +18,7 @@ import * as controller_maps from "../Controller/GoogleMapsController.js";
 
 import upload from "../Controller/utils/upload.js";
 import * as controller_wallet from "../Controller/WalletController.js";
+import * as controller_settings from "../Controller/settings.js";
 
 
 //Testing
@@ -115,5 +116,9 @@ Router.get("/maps/reverse-geocode", controller_maps.reverseGeocode);
 Router.get("/maps/geocode", controller_maps.geocodeAddress);
 Router.get("/maps/autocomplete", controller_maps.autocomplete);
 Router.get("/maps/place-details", controller_maps.placeDetails);
+
+// Settings
+Router.get("/settings/scheduling", controller_settings.getSchedulingSettings);
+Router.patch("/settings/scheduling", controller_settings.updateSchedulingSettings);
 
 export default Router;
