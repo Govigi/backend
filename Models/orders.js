@@ -4,10 +4,12 @@ const orderSchema = new mongoose.Schema(
   {
     customerId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "customers",
+      ref: "Customer",
       required: true
     },
     orderNumber: { type: String, unique: true, sparse: true },
+    driverId: { type: String }, // ID of the assigned driver/user
+    assignedAt: { type: Date },
     items: [
       {
         productId: { type: String, required: true },
@@ -29,6 +31,7 @@ const orderSchema = new mongoose.Schema(
     paymentMethod: { type: String },
     paymentStatus: { type: String, default: "Pending" },
     scheduledDate: { type: Date },
+    scheduledTimeSlot: { type: String },
   },
   {
     timestamps: true,
