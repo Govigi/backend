@@ -11,6 +11,21 @@ const createCustomerController = async (req, res) => {
         const newCustomer = await customerService.createCustomer(customerData);
         res.status(201).json(newCustomer);
     } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
+const updateCustomerController = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const customerData = req.body;
+        const updatedCustomer = await customerService.updateCustomer(id, customerData);
+        if (!updatedCustomer) {
+            return res.status(404).json({ message: "Customer not found" });
+        }
+        res.status(200).json(updatedCustomer);
+    } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
@@ -74,4 +89,4 @@ const getAllCustomersStatsController = async (req, res) => {
     }
 };
 
-export { createCustomerController, getCustomerByIdController, getAllCustomersController, getAllCustomersCountController, getAllCustomersStatsController, getCustomerProfileController };
+export { createCustomerController, updateCustomerController, getCustomerByIdController, getAllCustomersController, getAllCustomersCountController, getAllCustomersStatsController, getCustomerProfileController };

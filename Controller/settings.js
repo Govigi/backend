@@ -58,4 +58,16 @@ const updateSchedulingSettings = async (req, res) => {
     }
 };
 
-export { getSchedulingSettings, updateSchedulingSettings };
+const getMobileConfig = async (req, res) => {
+    try {
+        const settings = await GlobalSettings.findOne({ key: "mobile_config" });
+        // Return default structure if null to prevent app crash, 
+        // though seed script should have handled this.
+        res.status(200).json(settings ? settings.value : {});
+    } catch (err) {
+        console.error("Get Mobile Config Error:", err);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
+export { getSchedulingSettings, updateSchedulingSettings, getMobileConfig };

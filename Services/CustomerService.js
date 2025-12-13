@@ -10,12 +10,19 @@ class CustomerService extends BaseRepository {
         return await this.create(data);
     }
 
+    async updateCustomer(id, data) {
+        return await Customer.findByIdAndUpdate(id, data, { new: true });
+    }
+
     async getCustomerById(id) {
-        return await this.findById(id);
+        return await Customer.findById(id).populate("customerType", "typeName").populate("customerAddress");
     }
 
     async getAllCustomers() {
-        return await Customer.find().populate("customerType", "typeName").populate("customerAddress", "address");
+        return await Customer.find()
+            .populate("customerType", "typeName")
+            .populate("customerAddress")
+            .sort({ createdAt: -1 });
     }
 
     async getAllCustomersStats() {
