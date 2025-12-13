@@ -21,7 +21,7 @@ const orderSchema = new mongoose.Schema(
     ],
     addressId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "addresses",
+      ref: "Address",
       required: true
     },
     totalAmount: { type: Number, required: true },
@@ -30,6 +30,8 @@ const orderSchema = new mongoose.Schema(
     contact: { type: String },
     paymentMethod: { type: String },
     paymentStatus: { type: String, default: "Pending" },
+    vendorId: { type: mongoose.Schema.Types.ObjectId, ref: "Vendor" },
+    sourcingStatus: { type: String, default: "Pending" }, // Pending, Assigned, Shipped, Delivered, etc.
     scheduledDate: { type: Date },
     scheduledTimeSlot: { type: String },
   },

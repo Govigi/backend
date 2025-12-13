@@ -207,6 +207,7 @@ const getAllOrders = async (req, res) => {
   try {
     const orders = await Order.find()
       .populate('customerId', 'customerName customerPhone customerContactPerson customerAddress customerType')
+      .populate('addressId')
       .sort({ createdAt: -1 });
 
     if (!orders || orders.length === 0) {
