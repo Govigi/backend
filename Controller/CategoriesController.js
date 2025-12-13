@@ -28,7 +28,7 @@ const getAllCategoriesController = async (req, res) => {
     try {
         const categories = await CategoryService.getAllCategories();
         res.status(200).json(categories);
-    } catch (error) { 
+    } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
@@ -42,4 +42,31 @@ const getAllCategoriesStatsController = async (req, res) => {
     }
 };
 
-export { createCategoryController, getAllCategoriesController, getAllCategoriesStatsController };
+const updateCategoryController = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const categoryData = { ...req.body };
+
+        if (req.file) {
+            const image = await uploadImage(req.file);
+            if (!image) {
+                return res.status(500).json({ message: "Image upload failed" });
+            }
+            categoryData.categoryImage = {
+                url: image.url,
+                public_id: image.public_id
+            };
+        }
+
+        const updatedCategory = await CategoryService.updateCategory(id, categoryData);
+        if (!updatedCategory) {
+            return res.status(404).json({ message: "Category not found" });
+        }
+        res.status(200).json(updatedCategory);
+    } catch (error) {
+        console.error('Update Category Error:', error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
+export { createCategoryController, getAllCategoriesController, getAllCategoriesStatsController, updateCategoryController };

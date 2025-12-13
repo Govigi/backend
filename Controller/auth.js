@@ -30,11 +30,11 @@ const send_otp = async (req, res) => {
     let tempCustomer = null;
 
     if (!customer) {
-      tempCustomer = await TempCustomer.findOne({ mobileNumber: contact });
-
-      if (!tempCustomer) {
-        tempCustomer = await TempCustomer.create({ mobileNumber: contact });
-      }
+      tempCustomer = await TempCustomer.findOneAndUpdate(
+        { mobileNumber: contact },
+        { $setOnInsert: { mobileNumber: contact } },
+        { new: true, upsert: true }
+      );
     }
 
     const isTestNumber = contact === '9999999999';
@@ -110,11 +110,11 @@ const verify_otp = async (req, res) => {
 
     }
 
-    let tempCustomer = await TempCustomer.findOne({ mobileNumber: contact });
-
-    if (!tempCustomer) {
-      tempCustomer = await TempCustomer.create({ mobileNumber: contact });
-    }
+    let tempCustomer = await TempCustomer.findOneAndUpdate(
+      { mobileNumber: contact },
+      { $setOnInsert: { mobileNumber: contact } },
+      { new: true, upsert: true }
+    );
 
     const token = jwt.sign(
       {
@@ -191,7 +191,7 @@ const completeProfile = async (req, res) => {
 
     const newCustomer = await Customer.create({
       customerName,
-      customerEmail: customerEmail || "",
+      customerEmail: customerEmail || undefined, // Fix: undefined allows sparse index to work
       customerPhone,
       customerContactPerson,
       customerContactPersonNumber: customerContactPersonNumber || customerPhone,
@@ -225,6 +225,13 @@ const completeProfile = async (req, res) => {
 
   } catch (err) {
     console.error("Error in onboarding:", err);
+    if (err.code === 11000) {
+      return res.status(400).json({
+        message: "A customer with this email already exists.",
+        error: err.message
+      });
+    }
+    console.log(err);
     return res.status(500).json({
       message: "Failed to complete onboarding",
       error: err.message
@@ -264,7 +271,7 @@ const adminLogin = async (req, res) => {
     const token = jwt.sign(
       { adminId: admin._id, email: admin.email },
       JWT_SECRET,
-      { expiresIn: "1d" }
+      { expiresIn: "14d" }
     );
     res.status(200).json({ message: "Login successful", token });
   } catch (err) {

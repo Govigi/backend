@@ -92,8 +92,8 @@ const getAddresses = async (req, res) => {
         let addresses;
 
         try {
-            addresses = await Address.find({ userId: decoded.userId });
-            console.log("Addresses :", addresses);
+            addresses = await Address.find({ customerId: decoded.customerId });
+            console.log("Addresses found:", addresses.length);
         }
         catch (findErr) {
             console.log("Error finding addresses:", findErr);

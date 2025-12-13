@@ -15,10 +15,12 @@ import * as controller_invoice from "../Controller/invoice.controller.js";
 import * as controlle_orders from "../Controller/OrdersController.js";
 import * as controller_address from "../Controller/AddressController.js";
 import * as controller_maps from "../Controller/GoogleMapsController.js";
+import * as controller_sourcing from "../Controller/SourcingController.js";
 
 import upload from "../Controller/utils/upload.js";
 import * as controller_wallet from "../Controller/WalletController.js";
 import * as controller_settings from "../Controller/settings.js";
+import vendorRoutes from "./vendorRoutes.js"; // Import vendor routes
 
 
 //Testing
@@ -37,6 +39,7 @@ Router.post("/completeProfile", controller_auth.completeProfile);
 
 //Customer
 Router.post("/createCustomer", controller_customer.createCustomerController);
+Router.put("/updateCustomer/:id", controller_customer.updateCustomerController);
 Router.get("/getCustomer/:id", controller_customer.getCustomerByIdController);
 Router.get("/getAllCustomers", controller_customer.getAllCustomersController);
 Router.get("/getAllCustomersCount", controller_customer.getAllCustomersCountController);
@@ -79,10 +82,12 @@ Router.patch(
   upload.single("image"),
   controller_product.updateProduct
 );
+Router.patch("/bulkUpdateProducts", controller_product.bulkUpdateProducts);
 Router.delete("/deleteProduct/:id", controller_product.deleteProduct);
 
 //Categories
 Router.post("/createCategory", upload.single("image"), controller_category.createCategoryController);
+Router.put("/updateCategory/:id", upload.single("image"), controller_category.updateCategoryController);
 Router.get("/getAllCategories", controller_category.getAllCategoriesController);
 Router.get("/getAllCategoriesStats", controller_category.getAllCategoriesStatsController);
 
@@ -120,5 +125,13 @@ Router.get("/maps/place-details", controller_maps.placeDetails);
 // Settings
 Router.get("/settings/scheduling", controller_settings.getSchedulingSettings);
 Router.patch("/settings/scheduling", controller_settings.updateSchedulingSettings);
+Router.get("/mobile/config", controller_settings.getMobileConfig);
+
+// Sourcing
+Router.get("/sourcing/vendors", controller_sourcing.getNearbyVendors);
+Router.post("/sourcing/assign", controller_sourcing.assignOrdersToVendor);
+
+// Vendor Routes
+Router.use("/vendors", vendorRoutes);
 
 export default Router;
